@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
+import { create, StateCreator } from 'zustand';
+import { devtools, persist } from 'zustand/middleware';
 import { Project, Generation, Edit, SegmentationMask, BrushStroke, Theme, Language, AIProvider } from '../types';
 
 interface AppState {
@@ -88,109 +88,122 @@ interface AppState {
   setSelectedModel: (model: string) => void;
 }
 
+const appStateCreator: StateCreator<AppState> = (set, get) => ({
+    // Initial state
+    currentProject: null,
+    canvasImage: null,
+    canvasZoom: 1,
+    canvasPan: { x: 0, y: 0 },
+    
+    uploadedImages: [],
+    editReferenceImages: [],
+    
+    brushStrokes: [],
+    brushSize: 20,
+    showMasks: true,
+    
+    isGenerating: false,
+    currentPrompt: '',
+    temperature: 0.7,
+    seed: null,
+    
+    selectedGenerationId: null,
+    selectedEditId: null,
+    showHistory: true,
+    
+    showPromptPanel: true,
+    
+    selectedTool: 'generate',
+    
+    theme: { mode: 'dark' },
+    language: { code: 'en', name: 'English' },
+    
+    aiProvider: { 
+      id: 'gemini', 
+      name: 'Google Gemini', 
+      models: ['gemini-2.5-flash-image-preview'] 
+    },
+    selectedModel: 'gemini-2.5-flash-image-preview',
+    
+    // Actions
+    setCurrentProject: (project) => set({ currentProject: project }),
+    setCanvasImage: (url) => set({ canvasImage: url }),
+    setCanvasZoom: (zoom) => set({ canvasZoom: zoom }),
+    setCanvasPan: (pan) => set({ canvasPan: pan }),
+    
+    addUploadedImage: (url) => set((state) => ({ 
+      uploadedImages: [...state.uploadedImages, url] 
+    })),
+    removeUploadedImage: (index) => set((state) => ({ 
+      uploadedImages: state.uploadedImages.filter((_, i) => i !== index) 
+    })),
+    clearUploadedImages: () => set({ uploadedImages: [] }),
+    
+    addEditReferenceImage: (url) => set((state) => ({ 
+      editReferenceImages: [...state.editReferenceImages, url] 
+    })),
+    removeEditReferenceImage: (index) => set((state) => ({ 
+      editReferenceImages: state.editReferenceImages.filter((_, i) => i !== index) 
+    })),
+    clearEditReferenceImages: () => set({ editReferenceImages: [] }),
+    
+    addBrushStroke: (stroke) => set((state) => ({ 
+      brushStrokes: [...state.brushStrokes, stroke] 
+    })),
+    clearBrushStrokes: () => set({ brushStrokes: [] }),
+    setBrushSize: (size) => set({ brushSize: size }),
+    setShowMasks: (show) => set({ showMasks: show }),
+    
+    setIsGenerating: (generating) => set({ isGenerating: generating }),
+    setCurrentPrompt: (prompt) => set({ currentPrompt: prompt }),
+    setTemperature: (temp) => set({ temperature: temp }),
+    setSeed: (seed) => set({ seed: seed }),
+    
+    addGeneration: (generation) => set((state) => ({
+      currentProject: state.currentProject ? {
+        ...state.currentProject,
+        generations: [...state.currentProject.generations, generation],
+        updatedAt: Date.now()
+      } : null
+    })),
+    
+    addEdit: (edit) => set((state) => ({
+      currentProject: state.currentProject ? {
+        ...state.currentProject,
+        edits: [...state.currentProject.edits, edit],
+        updatedAt: Date.now()
+      } : null
+    })),
+    
+    selectGeneration: (id) => set({ selectedGenerationId: id }),
+    selectEdit: (id) => set({ selectedEditId: id }),
+    setShowHistory: (show) => set({ showHistory: show }),
+    
+    setShowPromptPanel: (show) => set({ showPromptPanel: show }),
+    
+    setSelectedTool: (tool) => set({ selectedTool: tool }),
+    
+    setTheme: (theme) => set({ theme }),
+    setLanguage: (language) => set({ language }),
+    
+    setAIProvider: (provider) => set({ aiProvider: provider }),
+    setSelectedModel: (model) => set({ selectedModel: model }),
+});
+
 export const useAppStore = create<AppState>()(
   devtools(
-    (set, get) => ({
-      // Initial state
-      currentProject: null,
-      canvasImage: null,
-      canvasZoom: 1,
-      canvasPan: { x: 0, y: 0 },
-      
-      uploadedImages: [],
-      editReferenceImages: [],
-      
-      brushStrokes: [],
-      brushSize: 20,
-      showMasks: true,
-      
-      isGenerating: false,
-      currentPrompt: '',
-      temperature: 0.7,
-      seed: null,
-      
-      selectedGenerationId: null,
-      selectedEditId: null,
-      showHistory: true,
-      
-      showPromptPanel: true,
-      
-      selectedTool: 'generate',
-      
-      theme: { mode: 'dark' },
-      language: { code: 'en', name: 'English' },
-      
-      aiProvider: { 
-        id: 'gemini', 
-        name: 'Google Gemini', 
-        models: ['gemini-2.5-flash-image-preview'] 
-      },
-      selectedModel: 'gemini-2.5-flash-image-preview',
-      
-      // Actions
-      setCurrentProject: (project) => set({ currentProject: project }),
-      setCanvasImage: (url) => set({ canvasImage: url }),
-      setCanvasZoom: (zoom) => set({ canvasZoom: zoom }),
-      setCanvasPan: (pan) => set({ canvasPan: pan }),
-      
-      addUploadedImage: (url) => set((state) => ({ 
-        uploadedImages: [...state.uploadedImages, url] 
-      })),
-      removeUploadedImage: (index) => set((state) => ({ 
-        uploadedImages: state.uploadedImages.filter((_, i) => i !== index) 
-      })),
-      clearUploadedImages: () => set({ uploadedImages: [] }),
-      
-      addEditReferenceImage: (url) => set((state) => ({ 
-        editReferenceImages: [...state.editReferenceImages, url] 
-      })),
-      removeEditReferenceImage: (index) => set((state) => ({ 
-        editReferenceImages: state.editReferenceImages.filter((_, i) => i !== index) 
-      })),
-      clearEditReferenceImages: () => set({ editReferenceImages: [] }),
-      
-      addBrushStroke: (stroke) => set((state) => ({ 
-        brushStrokes: [...state.brushStrokes, stroke] 
-      })),
-      clearBrushStrokes: () => set({ brushStrokes: [] }),
-      setBrushSize: (size) => set({ brushSize: size }),
-      setShowMasks: (show) => set({ showMasks: show }),
-      
-      setIsGenerating: (generating) => set({ isGenerating: generating }),
-      setCurrentPrompt: (prompt) => set({ currentPrompt: prompt }),
-      setTemperature: (temp) => set({ temperature: temp }),
-      setSeed: (seed) => set({ seed: seed }),
-      
-      addGeneration: (generation) => set((state) => ({
-        currentProject: state.currentProject ? {
-          ...state.currentProject,
-          generations: [...state.currentProject.generations, generation],
-          updatedAt: Date.now()
-        } : null
-      })),
-      
-      addEdit: (edit) => set((state) => ({
-        currentProject: state.currentProject ? {
-          ...state.currentProject,
-          edits: [...state.currentProject.edits, edit],
-          updatedAt: Date.now()
-        } : null
-      })),
-      
-      selectGeneration: (id) => set({ selectedGenerationId: id }),
-      selectEdit: (id) => set({ selectedEditId: id }),
-      setShowHistory: (show) => set({ showHistory: show }),
-      
-      setShowPromptPanel: (show) => set({ showPromptPanel: show }),
-      
-      setSelectedTool: (tool) => set({ selectedTool: tool }),
-      
-      setTheme: (theme) => set({ theme }),
-      setLanguage: (language) => set({ language }),
-      
-      setAIProvider: (provider) => set({ aiProvider: provider }),
-      setSelectedModel: (model) => set({ selectedModel: model }),
-    }),
+    persist(
+      appStateCreator,
+      {
+        name: 'nano-banana-settings',
+        partialize: (state) => ({
+          theme: state.theme,
+          language: state.language,
+          aiProvider: state.aiProvider,
+          selectedModel: state.selectedModel,
+        }),
+      }
+    ),
     { name: 'nano-banana-store' }
   )
 );

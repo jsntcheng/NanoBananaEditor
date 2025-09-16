@@ -1,3 +1,9 @@
+import { GoogleGenAI } from '@google/genai';
+
+// Note: In production, this should be handled via a backend proxy
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.VITE_OPENROUTER_API_KEY;
+const genAI = new GoogleGenAI({ apiKey: API_KEY });
+
 export interface OpenRouterRequest {
   prompt: string;
   model: string;
@@ -24,22 +30,25 @@ export class OpenRouterService {
     this.apiKey = apiKey;
   }
 
+  private buildEditPrompt(request: OpenRouterEditRequest): string {
+    const maskInstruction = request.maskImage 
+      ? "\n\nIMPORTANT: Apply changes ONLY where the mask image shows white pixels (value 255). Leave all other areas completely unchanged. Respect the mask boundaries precisely and maintain seamless blending at the edges."
+      : "";
+
+    return `Edit this image according to the following instruction: ${request.instruction}
+
+Maintain the original image's lighting, perspective, and overall composition. Make the changes look natural and seamlessly integrated.${maskInstruction}
+
+Preserve image quality and ensure the edit looks professional and realistic.`;
+  }
+
   async generateImage(request: OpenRouterRequest): Promise<string[]> {
     try {
-      // Build the messages array
-      const messages = [
-        {
-          role: 'user',
-          content: [
-            { type: 'text', text: request.prompt }
-          ]
-        }
-      ];
+      const content: any[] = [{ type: 'text', text: request.prompt }];
 
-      // Add reference images if provided
       if (request.referenceImages && request.referenceImages.length > 0) {
         request.referenceImages.forEach(image => {
-          messages[0].content.push({
+          content.push({
             type: 'image_url',
             image_url: {
               url: `data:image/png;base64,${image}`
@@ -58,49 +67,134 @@ export class OpenRouterService {
         },
         body: JSON.stringify({
           model: request.model,
-          messages,
+          messages: [{ role: 'user', content }],
           temperature: request.temperature || 0.7,
           seed: request.seed,
-          max_tokens: 4000
+          max_tokens: 4096, // Increased for image data
         })
       });
 
       if (!response.ok) {
-        throw new Error(`OpenRouter API error: ${response.statusText}`);
+        const errorText = await response.text();
+        throw new Error(`OpenRouter API error: ${response.statusText} - ${errorText}`);
       }
 
       const data = await response.json();
       
-      // For now, return a placeholder since OpenRouter doesn't directly support image generation
-      // In a real implementation, you'd need to use a model that supports image generation
-      // or convert the text response to an image generation request
-      throw new Error('Image generation not yet supported with OpenRouter. Please use Gemini for image generation.');
+      const images: string[] = [];
+      const messageContent = data.choices[0]?.message?.content;
+
+      if (Array.isArray(messageContent)) {
+        for (const part of messageContent) {
+          if (part.type === 'image_url' && part.image_url?.url) {
+            const base64Data = part.image_url.url.split(',')[1];
+            if (base64Data) {
+              images.push(base64Data);
+            }
+          }
+        }
+      }
+
+      if (images.length === 0) {
+        throw new Error('No image data found in OpenRouter response.');
+      }
+
+      return images;
       
     } catch (error) {
       console.error('Error generating image with OpenRouter:', error);
-      throw new Error('Failed to generate image with OpenRouter. Please try again.');
+      throw new Error(`Failed to generate image with OpenRouter. ${error instanceof Error ? error.message : 'Please try again.'}`);
     }
   }
 
   async editImage(request: OpenRouterEditRequest): Promise<string[]> {
     try {
-      // Similar to generateImage, but for editing
-      // This would need to be implemented based on the specific model's capabilities
-      throw new Error('Image editing not yet supported with OpenRouter. Please use Gemini for image editing.');
+      const content: any[] = [{ type: 'text', text: this.buildEditPrompt(request) }];
+
+      // Add original image
+      content.push({
+        type: 'image_url',
+        image_url: {
+          url: `data:image/png;base64,${request.originalImage}`
+        }
+      });
+
+      // Add reference images if provided
+      if (request.referenceImages && request.referenceImages.length > 0) {
+        request.referenceImages.forEach(image => {
+          content.push({
+            type: 'image_url',
+            image_url: {
+              url: `data:image/png;base64,${image}`
+            }
+          });
+        });
+      }
+
+      // Add mask image if provided
+      if (request.maskImage) {
+        content.push({
+          type: 'image_url',
+          image_url: {
+            url: `data:image/png;base64,${request.maskImage}`
+          }
+        });
+      }
+
+      const response = await fetch(`${this.baseUrl}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': window.location.origin,
+          'X-Title': 'Nano Banana Image Editor'
+        },
+        body: JSON.stringify({
+          model: request.model,
+          messages: [{ role: 'user', content }],
+          temperature: request.temperature || 0.7,
+          seed: request.seed,
+          max_tokens: 4096,
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`OpenRouter API error: ${response.statusText} - ${errorText}`);
+      }
+
+      const data = await response.json();
+      
+      const images: string[] = [];
+      const messageContent = data.choices[0]?.message?.content;
+
+      if (Array.isArray(messageContent)) {
+        for (const part of messageContent) {
+          if (part.type === 'image_url' && part.image_url?.url) {
+            const base64Data = part.image_url.url.split(',')[1];
+            if (base64Data) {
+              images.push(base64Data);
+            }
+          }
+        }
+      }
+
+      if (images.length === 0) {
+        throw new Error('No image data found in OpenRouter response.');
+      }
+
+      return images;
       
     } catch (error) {
       console.error('Error editing image with OpenRouter:', error);
-      throw new Error('Failed to edit image with OpenRouter. Please try again.');
+      throw new Error(`Failed to edit image with OpenRouter. ${error instanceof Error ? error.message : 'Please try again.'}`);
     }
   }
 
   // Get available models for image generation/editing
   static getAvailableModels(): string[] {
     return [
-      'anthropic/claude-3.5-sonnet',
-      'openai/gpt-4o',
-      'google/gemini-pro-1.5',
-      'meta-llama/llama-3.2-90b-vision-instruct'
+      'google/gemini-2.5-flash-image-preview'
     ];
   }
 }

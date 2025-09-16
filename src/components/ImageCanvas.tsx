@@ -4,8 +4,10 @@ import { useAppStore } from '../store/useAppStore';
 import { Button } from './ui/Button';
 import { ZoomIn, ZoomOut, RotateCcw, Download, Eye, EyeOff, Eraser } from 'lucide-react';
 import { cn } from '../utils/cn';
+import { useTranslation } from '../hooks/useTranslation';
 
 export const ImageCanvas: React.FC = () => {
+  const { t } = useTranslation();
   const {
     canvasImage,
     canvasZoom,
@@ -136,6 +138,7 @@ export const ImageCanvas: React.FC = () => {
       id: `stroke-${Date.now()}`,
       points: currentStroke,
       brushSize,
+      color: '#A855F7',
     });
     setCurrentStroke([]);
   };
@@ -175,14 +178,14 @@ export const ImageCanvas: React.FC = () => {
   return (
     <div className="flex flex-col h-full">
       {/* Toolbar */}
-      <div className="p-3 border-b border-gray-800 bg-gray-950">
+      <div className="p-3 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
         <div className="flex items-center justify-between">
           {/* Left side - Zoom controls */}
           <div className="flex items-center space-x-2">
             <Button variant="outline" size="sm" onClick={() => handleZoom(-0.1)}>
               <ZoomOut className="h-4 w-4" />
             </Button>
-            <span className="text-sm text-gray-400 min-w-[60px] text-center">
+            <span className="text-sm text-gray-600 dark:text-gray-400 min-w-[60px] text-center">
               {Math.round(canvasZoom * 100)}%
             </span>
             <Button variant="outline" size="sm" onClick={() => handleZoom(0.1)}>
@@ -198,16 +201,16 @@ export const ImageCanvas: React.FC = () => {
             {selectedTool === 'mask' && (
               <>
                 <div className="flex items-center space-x-2 mr-2">
-                  <span className="text-xs text-gray-400">Brush:</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">{t('brush')}:</span>
                   <input
                     type="range"
                     min="5"
                     max="50"
                     value={brushSize}
                     onChange={(e) => setBrushSize(parseInt(e.target.value))}
-                    className="w-16 h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer slider"
+                    className="w-16 h-2 bg-gray-200 dark:bg-gray-800 rounded-lg appearance-none cursor-pointer slider"
                   />
-                  <span className="text-xs text-gray-400 w-6">{brushSize}</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400 w-6">{brushSize}</span>
                 </div>
                 <Button
                   variant="outline"
@@ -227,13 +230,13 @@ export const ImageCanvas: React.FC = () => {
               className={cn(showMasks && 'bg-yellow-400/10 border-yellow-400/50')}
             >
               {showMasks ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
-              <span className="hidden sm:inline ml-2">Masks</span>
+              <span className="hidden sm:inline ml-2">{t('masks')}</span>
             </Button>
             
             {canvasImage && (
               <Button variant="secondary" size="sm" onClick={handleDownload}>
                 <Download className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline">Download</span>
+                <span className="hidden sm_inline">{t('download')}</span>
               </Button>
             )}
           </div>
@@ -243,19 +246,19 @@ export const ImageCanvas: React.FC = () => {
       {/* Canvas Area */}
       <div 
         id="canvas-container" 
-        className="flex-1 relative overflow-hidden bg-gray-800"
+        className="flex-1 relative overflow-hidden bg-gray-100 dark:bg-gray-800"
       >
         {!image && !isGenerating && (
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
               <div className="text-6xl mb-4">🍌</div>
-              <h2 className="text-xl font-medium text-gray-300 mb-2">
-                Welcome to Nano Banana Framework
+              <h2 className="text-xl font-medium text-gray-800 dark:text-gray-300 mb-2">
+                {t('welcomeTitle')}
               </h2>
-              <p className="text-gray-500 max-w-md">
+              <p className="text-gray-600 dark:text-gray-500 max-w-md">
                 {selectedTool === 'generate' 
-                  ? 'Start by describing what you want to create in the prompt box'
-                  : 'Upload an image to begin editing'
+                  ? t('welcomeGenerate')
+                  : t('welcomeEdit')
                 }
               </p>
             </div>
@@ -263,10 +266,10 @@ export const ImageCanvas: React.FC = () => {
         )}
 
         {isGenerating && (
-          <div className="absolute inset-0 flex items-center justify-center bg-gray-900/50">
+          <div className="absolute inset-0 flex items-center justify-center bg-white/50 dark:bg-gray-900/50">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-400 mb-4" />
-              <p className="text-gray-300">Creating your image...</p>
+              <p className="text-gray-800 dark:text-gray-300">{t('creatingImage')}...</p>
             </div>
           </div>
         )}
@@ -339,29 +342,29 @@ export const ImageCanvas: React.FC = () => {
       </div>
 
       {/* Status Bar */}
-      <div className="p-3 border-t border-gray-800 bg-gray-950">
-        <div className="flex items-center justify-between text-xs text-gray-500">
+      <div className="p-3 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
+        <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-500">
           <div className="flex items-center space-x-4">
             {brushStrokes.length > 0 && (
-              <span className="text-yellow-400">{brushStrokes.length} brush stroke{brushStrokes.length !== 1 ? 's' : ''}</span>
+              <span className="text-yellow-500 dark:text-yellow-400">{brushStrokes.length} brush stroke{brushStrokes.length > 1 ? 's' : ''}</span>
             )}
           </div>
           
           <div className="flex items-center space-x-2">
-            <span className="text-xs text-gray-500">
-              © 2025 Mark Fulton - 
+            <span className="text-xs text-gray-600 dark:text-gray-500">
+              {t('copyright')}
               <a
                 href="https://www.reinventing.ai/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-yellow-400 hover:text-yellow-300 transition-colors ml-1"
+                className="text-yellow-500 dark:text-yellow-400 hover:text-yellow-600 dark:hover:text-yellow-300 transition-colors ml-1"
               >
                 Reinventing.AI Solutions
               </a>
             </span>
-            <span className="text-gray-600 hidden md:inline">•</span>
-            <span className="text-yellow-400 hidden md:inline">⚡</span>
-            <span className="hidden md:inline">Powered by Gemini 2.5 Flash Image</span>
+            <span className="text-gray-400 dark:text-gray-600 hidden md:inline">•</span>
+            <span className="text-yellow-500 dark:text-yellow-400 hidden md:inline">⚡</span>
+            <span className="hidden md:inline">{t('poweredBy')}</span>
           </div>
         </div>
       </div>

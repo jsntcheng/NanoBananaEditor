@@ -1,5 +1,5 @@
 import { geminiService } from './geminiService';
-import { createOpenRouterService } from './openrouterService';
+import { createOpenRouterService, OpenRouterService } from './openrouterService';
 import { AIProvider } from '../types';
 
 export interface UnifiedGenerationRequest {
@@ -91,12 +91,7 @@ export class AIService {
       {
         id: 'openrouter',
         name: 'OpenRouter',
-        models: [
-          'anthropic/claude-3.5-sonnet',
-          'openai/gpt-4o',
-          'google/gemini-pro-1.5',
-          'meta-llama/llama-3.2-90b-vision-instruct'
-        ]
+        models: OpenRouterService.getAvailableModels()
       }
     ];
   }

@@ -12,6 +12,9 @@ export const translations = {
     generateDesc: 'Create from text',
     editDesc: 'Modify existing',
     selectDesc: 'Click to select',
+    createFromText: 'Create from text',
+    modifyExisting: 'Modify existing',
+    clickToSelect: 'Click to select',
     
     // Prompts
     mode: 'Mode',
@@ -25,6 +28,8 @@ export const translations = {
     uploadToEditDesc: 'Upload image to edit, up to 2 images',
     
     // Prompt input
+    describeWhatYouWantToCreate: 'Describe what you want to create',
+    describeYourChanges: 'Describe your changes',
     describeCreate: 'Describe what you want to create',
     describeChanges: 'Describe your changes',
     promptPlaceholderGenerate: 'A serene mountain landscape at sunset with a lake reflecting the golden sky...',
@@ -32,6 +37,7 @@ export const translations = {
     
     // Quality indicators
     addDetailForBetter: 'Add detail for better results',
+    addDetailForBetterResults: 'Add detail for better results',
     goodDetailLevel: 'Good detail level',
     excellentPromptDetail: 'Excellent prompt detail',
     
@@ -42,12 +48,16 @@ export const translations = {
     clearSession: 'Clear Session',
     showAdvanced: 'Show Advanced Controls',
     hideAdvanced: 'Hide Advanced Controls',
+    show: 'Show',
+    hide: 'Hide',
+    advancedControls: 'Advanced Controls',
     yesClear: 'Yes, Clear',
     cancel: 'Cancel',
     
     // Advanced controls
     creativity: 'Creativity',
     seed: 'Seed (optional)',
+    seedOptional: 'Seed (optional)',
     random: 'Random',
     
     // Canvas
@@ -85,6 +95,16 @@ export const translations = {
     welcomeGenerate: 'Start by describing what you want to create in the prompt box',
     welcomeEdit: 'Upload an image to begin editing',
     creatingImage: 'Creating your image...',
+    ref: 'Ref',
+    editAnImageWithMasks: 'Edit an image with masks',
+    optionalUpTo2Images: 'Optional, up to 2 images',
+    optionalStyleReferencesUpTo2Images: 'Optional style references, up to 2 images',
+    uploadImageToEditUpTo2Images: 'Upload image to edit, up to 2 images',
+    referenceImage: 'Reference Image',
+    referenceImageDescription: 'This reference image was used to guide the generation',
+    originalImageDescription: 'The base image that was edited',
+    maskedReferenceImage: 'Masked Reference Image',
+    maskedReferenceImageDescription: 'This image with mask overlay was sent to the AI model to guide the edit',
     
     // Settings
     settings: 'Settings',
@@ -96,6 +116,7 @@ export const translations = {
     
     // Confirm dialogs
     clearSessionConfirm: 'Are you sure you want to clear this session? This will remove all uploads, prompts, and canvas content.',
+    clearSessionConfirmation: 'Are you sure you want to clear this session? This will remove all uploads, prompts, and canvas content.',
     
     // Tooltips
     showHistoryPanel: 'Show History Panel',
@@ -145,6 +166,9 @@ export const translations = {
     generateDesc: '从文本创建',
     editDesc: '修改现有图像',
     selectDesc: '点击选择',
+    createFromText: '从文本创建',
+    modifyExisting: '修改现有图像',
+    clickToSelect: '点击选择',
     
     // Prompts
     mode: '模式',
@@ -158,6 +182,8 @@ export const translations = {
     uploadToEditDesc: '上传要编辑的图像，最多2张图像',
     
     // Prompt input
+    describeWhatYouWantToCreate: '描述你想要创建的内容',
+    describeYourChanges: '描述你的修改',
     describeCreate: '描述你想要创建的内容',
     describeChanges: '描述你的修改',
     promptPlaceholderGenerate: '夕阳下宁静的山景，湖水倒映着金色的天空...',
@@ -165,6 +191,7 @@ export const translations = {
     
     // Quality indicators
     addDetailForBetter: '添加细节以获得更好的结果',
+    addDetailForBetterResults: '添加细节以获得更好的结果',
     goodDetailLevel: '良好的细节水平',
     excellentPromptDetail: '优秀的提示细节',
     
@@ -175,12 +202,16 @@ export const translations = {
     clearSession: '清除会话',
     showAdvanced: '显示高级控制',
     hideAdvanced: '隐藏高级控制',
+    show: '显示',
+    hide: '隐藏',
+    advancedControls: '高级控制',
     yesClear: '是的，清除',
     cancel: '取消',
     
     // Advanced controls
     creativity: '创造力',
     seed: '种子（可选）',
+    seedOptional: '种子（可选）',
     random: '随机',
     
     // Canvas
@@ -218,6 +249,16 @@ export const translations = {
     welcomeGenerate: '在提示框中描述你想要创建的内容开始',
     welcomeEdit: '上传图像开始编辑',
     creatingImage: '正在创建你的图像...',
+    ref: '参考',
+    editAnImageWithMasks: '使用蒙版编辑图像',
+    optionalUpTo2Images: '可选，最多2张图像',
+    optionalStyleReferencesUpTo2Images: '可选风格参考，最多2张图像',
+    uploadImageToEditUpTo2Images: '上传要编辑的图像，最多2张图像',
+    referenceImage: '参考图像',
+    referenceImageDescription: '此参考图像用于指导生成',
+    originalImageDescription: '被编辑的基础图像',
+    maskedReferenceImage: '蒙版参考图像',
+    maskedReferenceImageDescription: '此带有蒙版叠加的图像已发送到AI模型以指导编辑',
     
     // Settings
     settings: '设置',
@@ -229,6 +270,7 @@ export const translations = {
     
     // Confirm dialogs
     clearSessionConfirm: '确定要清除此会话吗？这将删除所有上传、提示和画布内容。',
+    clearSessionConfirmation: '确定要清除此会话吗？这将删除所有上传、提示和画布内容。',
     
     // Tooltips
     showHistoryPanel: '显示历史面板',
