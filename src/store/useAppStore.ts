@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { Project, Generation, Edit, SegmentationMask, BrushStroke } from '../types';
+import { Project, Generation, Edit, SegmentationMask, BrushStroke, Theme, Language, AIProvider } from '../types';
 
 interface AppState {
   // Current project
@@ -37,6 +37,14 @@ interface AppState {
   // UI state
   selectedTool: 'generate' | 'edit' | 'mask';
   
+  // Theme and language
+  theme: Theme;
+  language: Language;
+  
+  // AI Provider
+  aiProvider: AIProvider;
+  selectedModel: string;
+  
   // Actions
   setCurrentProject: (project: Project | null) => void;
   setCanvasImage: (url: string | null) => void;
@@ -70,6 +78,14 @@ interface AppState {
   setShowPromptPanel: (show: boolean) => void;
   
   setSelectedTool: (tool: 'generate' | 'edit' | 'mask') => void;
+  
+  // Theme and language actions
+  setTheme: (theme: Theme) => void;
+  setLanguage: (language: Language) => void;
+  
+  // AI Provider actions
+  setAIProvider: (provider: AIProvider) => void;
+  setSelectedModel: (model: string) => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -100,6 +116,16 @@ export const useAppStore = create<AppState>()(
       showPromptPanel: true,
       
       selectedTool: 'generate',
+      
+      theme: { mode: 'dark' },
+      language: { code: 'en', name: 'English' },
+      
+      aiProvider: { 
+        id: 'gemini', 
+        name: 'Google Gemini', 
+        models: ['gemini-2.5-flash-image-preview'] 
+      },
+      selectedModel: 'gemini-2.5-flash-image-preview',
       
       // Actions
       setCurrentProject: (project) => set({ currentProject: project }),
@@ -158,6 +184,12 @@ export const useAppStore = create<AppState>()(
       setShowPromptPanel: (show) => set({ showPromptPanel: show }),
       
       setSelectedTool: (tool) => set({ selectedTool: tool }),
+      
+      setTheme: (theme) => set({ theme }),
+      setLanguage: (language) => set({ language }),
+      
+      setAIProvider: (provider) => set({ aiProvider: provider }),
+      setSelectedModel: (model) => set({ selectedModel: model }),
     }),
     { name: 'nano-banana-store' }
   )

@@ -65,3 +65,18 @@ export interface PromptHint {
   text: string;
   example: string;
 }
+
+export interface Theme {
+  mode: 'light' | 'dark';
+}
+
+export interface Language {
+  code: 'en' | 'zh';
+  name: string;
+}
+
+export interface AIProvider {
+  id: 'gemini' | 'openrouter';
+  name: string;
+  models: string[];
+}

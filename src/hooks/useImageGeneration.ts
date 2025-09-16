@@ -1,15 +1,27 @@
 import { useMutation } from '@tanstack/react-query';
-import { geminiService, GenerationRequest, EditRequest } from '../services/geminiService';
+import { AIService, UnifiedGenerationRequest, UnifiedEditRequest } from '../services/aiService';
 import { useAppStore } from '../store/useAppStore';
 import { generateId } from '../utils/imageUtils';
 import { Generation, Edit, Asset } from '../types';
 
 export const useImageGeneration = () => {
-  const { addGeneration, setIsGenerating, setCanvasImage, setCurrentProject, currentProject } = useAppStore();
+  const { 
+    addGeneration, 
+    setIsGenerating, 
+    setCanvasImage, 
+    setCurrentProject, 
+    currentProject,
+    aiProvider,
+    selectedModel
+  } = useAppStore();
 
   const generateMutation = useMutation({
-    mutationFn: async (request: GenerationRequest) => {
-      const images = await geminiService.generateImage(request);
+    mutationFn: async (request: Omit<UnifiedGenerationRequest, 'provider' | 'model'>) => {
+      const images = await AIService.generateImage({
+        ...request,
+        provider: aiProvider,
+        model: selectedModel
+      });
       return images;
     },
     onMutate: () => {
@@ -53,7 +65,7 @@ export const useImageGeneration = () => {
             checksum: img.slice(0, 32)
           })) : [],
           outputAssets,
-          modelVersion: 'gemini-2.5-flash-image-preview',
+          modelVersion: selectedModel,
           timestamp: Date.now()
         };
 
@@ -99,7 +111,9 @@ export const useImageEditing = () => {
     selectedGenerationId,
     currentProject,
     seed,
-    temperature 
+    temperature,
+    aiProvider,
+    selectedModel
   } = useAppStore();
 
   const editMutation = useMutation({
@@ -202,16 +216,18 @@ export const useImageEditing = () => {
         referenceImages = [maskedReferenceImage, ...referenceImages];
       }
       
-      const request: EditRequest = {
+      const request: UnifiedEditRequest = {
         instruction,
         originalImage: base64Image,
         referenceImages: referenceImages.length > 0 ? referenceImages : undefined,
         maskImage,
         temperature,
-        seed
+        seed,
+        provider: aiProvider,
+        model: selectedModel
       };
       
-      const images = await geminiService.editImage(request);
+      const images = await AIService.editImage(request);
       return { images, maskedReferenceImage };
     },
     onMutate: () => {

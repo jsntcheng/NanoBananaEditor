@@ -20,7 +20,13 @@ const queryClient = new QueryClient({
 function AppContent() {
   useKeyboardShortcuts();
   
-  const { showPromptPanel, setShowPromptPanel, showHistory, setShowHistory } = useAppStore();
+  const { 
+    showPromptPanel, 
+    setShowPromptPanel, 
+    showHistory, 
+    setShowHistory, 
+    theme 
+  } = useAppStore();
   
   // Set mobile defaults on mount
   React.useEffect(() => {
@@ -36,9 +42,18 @@ function AppContent() {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, [setShowPromptPanel, setShowHistory]);
+  
+  // Apply theme to document
+  React.useEffect(() => {
+    if (theme.mode === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme.mode]);
 
   return (
-    <div className="h-screen bg-gray-900 text-gray-100 flex flex-col font-sans">
+    <div className="h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 flex flex-col font-sans">
       <Header />
       
       <div className="flex-1 flex overflow-hidden">
