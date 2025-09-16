@@ -51,7 +51,7 @@ export const InfoModal: React.FC<InfoModalProps> = ({ open, onOpenChange }) => {
                   <p className="text-sm text-gray-300 mb-4">
                     Learn to vibe code apps like this one and master AI automation, build intelligent agents, and create cutting-edge solutions that drive real business results.
                   </p>
-                  <a
+                  {/* <a
                     href="https://www.reinventing.ai/"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -59,7 +59,7 @@ export const InfoModal: React.FC<InfoModalProps> = ({ open, onOpenChange }) => {
                   >
                     Join the AI Accelerator Program
                     <ExternalLink className="h-4 w-4 ml-1" />
-                  </a>
+                  </a> */}
                 </div>
                 
                 <div className="p-4 bg-gradient-to-br from-yellow-900/30 to-orange-900/30 rounded-lg border border-yellow-500/30">

@@ -1,9 +1,3 @@
-import { GoogleGenAI } from '@google/genai';
-
-// Note: In production, this should be handled via a backend proxy
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.VITE_OPENROUTER_API_KEY;
-const genAI = new GoogleGenAI({ apiKey: API_KEY });
-
 export interface OpenRouterRequest {
   prompt: string;
   model: string;
@@ -80,14 +74,33 @@ Preserve image quality and ensure the edit looks professional and realistic.`;
       }
 
       const data = await response.json();
-      
-      const images: string[] = [];
-      const messageContent = data.choices[0]?.message?.content;
+      const choice = data.choices[0];
 
-      if (Array.isArray(messageContent)) {
-        for (const part of messageContent) {
+      if (!choice || !choice.message) {
+        throw new Error(`Invalid response structure from OpenRouter: ${JSON.stringify(data)}`);
+      }
+
+      const message = choice.message;
+      const images: string[] = [];
+
+      // Prioritize the 'images' array in the message object
+      if (message.images && Array.isArray(message.images) && message.images.length > 0) {
+        for (const img of message.images) {
+          if (img.image_url && img.image_url.url) {
+            const urlParts = img.image_url.url.split(',');
+            const base64Data = urlParts.length > 1 ? urlParts[1] : '';
+            if (base64Data) {
+              images.push(base64Data);
+            }
+          }
+        }
+      }
+      // Fallback to checking the 'content' array for images
+      else if (Array.isArray(message.content)) {
+        for (const part of message.content) {
           if (part.type === 'image_url' && part.image_url?.url) {
-            const base64Data = part.image_url.url.split(',')[1];
+            const urlParts = part.image_url.url.split(',');
+            const base64Data = urlParts.length > 1 ? urlParts[1] : '';
             if (base64Data) {
               images.push(base64Data);
             }
@@ -96,7 +109,11 @@ Preserve image quality and ensure the edit looks professional and realistic.`;
       }
 
       if (images.length === 0) {
-        throw new Error('No image data found in OpenRouter response.');
+        // If content is a string, it's likely an error or text-only response
+        if (typeof message.content === 'string' && message.content.trim()) {
+          throw new Error(`OpenRouter returned a text response instead of an image: ${message.content}`);
+        }
+        throw new Error(`No image data found in OpenRouter response. Raw response: ${JSON.stringify(data)}`);
       }
 
       return images;
@@ -164,14 +181,33 @@ Preserve image quality and ensure the edit looks professional and realistic.`;
       }
 
       const data = await response.json();
-      
-      const images: string[] = [];
-      const messageContent = data.choices[0]?.message?.content;
+      const choice = data.choices[0];
 
-      if (Array.isArray(messageContent)) {
-        for (const part of messageContent) {
+      if (!choice || !choice.message) {
+        throw new Error(`Invalid response structure from OpenRouter: ${JSON.stringify(data)}`);
+      }
+
+      const message = choice.message;
+      const images: string[] = [];
+
+      // Prioritize the 'images' array in the message object
+      if (message.images && Array.isArray(message.images) && message.images.length > 0) {
+        for (const img of message.images) {
+          if (img.image_url && img.image_url.url) {
+            const urlParts = img.image_url.url.split(',');
+            const base64Data = urlParts.length > 1 ? urlParts[1] : '';
+            if (base64Data) {
+              images.push(base64Data);
+            }
+          }
+        }
+      }
+      // Fallback to checking the 'content' array for images
+      else if (Array.isArray(message.content)) {
+        for (const part of message.content) {
           if (part.type === 'image_url' && part.image_url?.url) {
-            const base64Data = part.image_url.url.split(',')[1];
+            const urlParts = part.image_url.url.split(',');
+            const base64Data = urlParts.length > 1 ? urlParts[1] : '';
             if (base64Data) {
               images.push(base64Data);
             }
@@ -180,7 +216,11 @@ Preserve image quality and ensure the edit looks professional and realistic.`;
       }
 
       if (images.length === 0) {
-        throw new Error('No image data found in OpenRouter response.');
+        // If content is a string, it's likely an error or text-only response
+        if (typeof message.content === 'string' && message.content.trim()) {
+          throw new Error(`OpenRouter returned a text response instead of an image: ${message.content}`);
+        }
+        throw new Error(`No image data found in OpenRouter response. Raw response: ${JSON.stringify(data)}`);
       }
 
       return images;

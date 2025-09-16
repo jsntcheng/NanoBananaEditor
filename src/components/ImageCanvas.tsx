@@ -353,14 +353,14 @@ export const ImageCanvas: React.FC = () => {
           <div className="flex items-center space-x-2">
             <span className="text-xs text-gray-600 dark:text-gray-500">
               {t('copyright')}
-              <a
+              {/* <a
                 href="https://www.reinventing.ai/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-yellow-500 dark:text-yellow-400 hover:text-yellow-600 dark:hover:text-yellow-300 transition-colors ml-1"
               >
                 Reinventing.AI Solutions
-              </a>
+              </a> */}
             </span>
             <span className="text-gray-400 dark:text-gray-600 hidden md:inline">•</span>
             <span className="text-yellow-500 dark:text-yellow-400 hidden md:inline">⚡</span>

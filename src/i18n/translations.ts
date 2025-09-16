@@ -155,7 +155,7 @@ export const translations = {
   },
   zh: {
     // Header
-    appTitle: '纳米香蕉AI图像编辑器',
+    appTitle: '喵喵喵香蕉AI图像编辑器',
     appTitleShort: 'NB编辑器',
     version: '1.0',
     
@@ -245,7 +245,7 @@ export const translations = {
     togglePanel: '切换面板',
     
     // Welcome
-    welcomeTitle: '欢迎使用纳米香蕉框架',
+    welcomeTitle: '欢迎使用喵喵喵香蕉框架',
     welcomeGenerate: '在提示框中描述你想要创建的内容开始',
     welcomeEdit: '上传图像开始编辑',
     creatingImage: '正在创建你的图像...',
@@ -279,7 +279,7 @@ export const translations = {
     hidePromptPanel: '隐藏提示面板',
     
     // About modal
-    aboutTitle: '关于纳米香蕉AI图像编辑器',
+    aboutTitle: '关于喵喵喵香蕉AI图像编辑器',
     developedBy: '开发者',
     learnToBuild: '学习构建AI应用和更多解决方案',
     learnDescription: '学习像这样的应用程序的编程，掌握AI自动化，构建智能代理，创建推动真正业务成果的前沿解决方案。',
@@ -304,8 +304,8 @@ export const translations = {
     bestPracticeDesc: '写完整的句子来描述完整的场景，而不仅仅是关键词。想象"用文字给我画一幅画"。',
     
     // Footer
-    copyright: '© 2025 Mark Fulton -',
-    poweredBy: '由Gemini 2.5 Flash Image驱动',
+    copyright: '© 2025 喵喵喵 -',
+    poweredBy: '由🍌Nano Banana驱动',
   }
 };
 
