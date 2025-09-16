@@ -71,12 +71,12 @@ export const PromptComposer: React.FC = () => {
         
         if (selectedTool === 'generate') {
           // Add to reference images (max 2)
-          if (uploadedImages.length < 2) {
+          if (uploadedImages.length < 8) {
             addUploadedImage(dataUrl);
           }
         } else if (selectedTool === 'edit') {
           // For edit mode, add to separate edit reference images (max 2)
-          if (editReferenceImages.length < 2) {
+          if (editReferenceImages.length < 8) {
             addEditReferenceImage(dataUrl);
           }
           // Set as canvas image if none exists

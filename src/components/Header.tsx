@@ -36,17 +36,17 @@ export const Header: React.FC = () => {
           >
             <Settings className="h-5 w-5" />
           </Button>
-          <Button 
+          {/* <Button 
             variant="ghost" 
             size="icon"
             onClick={() => setShowInfoModal(true)}
           >
             <HelpCircle className="h-5 w-5" />
-          </Button>
+          </Button> */}
         </div>
       </header>
       
-      <InfoModal open={showInfoModal} onOpenChange={setShowInfoModal} />
+      {/* <InfoModal open={showInfoModal} onOpenChange={setShowInfoModal} /> */}
       <SettingsModal open={showSettingsModal} onOpenChange={setShowSettingsModal} />
     </>
   );

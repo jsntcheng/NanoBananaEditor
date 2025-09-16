@@ -116,14 +116,14 @@ const appStateCreator: StateCreator<AppState> = (set, get) => ({
     selectedTool: 'generate',
     
     theme: { mode: 'dark' },
-    language: { code: 'en', name: 'English' },
+    language: { code: 'zh', name: '中文' },
     
-    aiProvider: { 
-      id: 'gemini', 
-      name: 'Google Gemini', 
-      models: ['gemini-2.5-flash-image-preview'] 
+    aiProvider: {
+      id: 'openrouter',
+      name: 'OpenRouter',
+      models: ['google/gemini-2.5-flash-image-preview']
     },
-    selectedModel: 'gemini-2.5-flash-image-preview',
+    selectedModel: 'google/gemini-2.5-flash-image-preview',
     
     // Actions
     setCurrentProject: (project) => set({ currentProject: project }),
